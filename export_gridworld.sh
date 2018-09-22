@@ -22,5 +22,5 @@ PREFIX="./outputs/sources"
 MAPPATH="./maps/"
 echo "python maze_from_gridworld.py -o $PREFIX -m $MAPPATH"
 python maze_from_gridworld.py -o $PREFIX -m $MAPPATH
-python wad_for_gridworld.py "${PREFIX}" "outputs/" -b outputs/static_goal_train.o
+python wad_for_gridworld.py "${PREFIX}" "outputs/" -b outputs/griddoom.o
 echo "Success."

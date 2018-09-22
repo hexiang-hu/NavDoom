@@ -17,7 +17,7 @@ parser.add_argument(
     help='path to script source lump containing map behavior (optional)')
 
 BLOCK_SIZE = 96
-
+COLORS = [[2, 3, 4], [5, 6, 7], [8, 9, 10]]
 
 def build_wall(maze):
     things = []
@@ -83,20 +83,31 @@ def build_wall(maze):
         for v in _corners:
             __add_vertex(*v)
     
-    # import IPython
-    # IPython.embed()
-    for _corners in corners:
-        for i in range(len(corners)):
-            if i != len(corners) - 1:
-                __add_line(corners[i], corners[i + 1], True)
-            else:
-                __add_line(corners[i], corners[0], True)
-
     def wall_colors(x, y):
-        _colors = [[2, 3, 4], [5, 6, 7], [8, 9, 10]]
         _x = min(x, 14) // 5
         _y = min(y, 14) // 5
-        return _colors[_x][_y]
+        return COLORS[_x][_y]
+
+    j = 0
+    for i in range(len(corners[0]))[::-1]:
+        if i != 0:
+            __add_line(corners[j][i], corners[j][i - 1], True, COLORS[min(j,2)][min(i-1,2)])
+
+    j = len(corners) - 1
+    for i in range(len(corners[0])):
+        if i != (len(corners[0]) - 1):
+            __add_line(corners[j][i], corners[j][i + 1], True, COLORS[min(j,2)][min(i,2)])
+    
+    i = len(corners[0]) - 1
+    for j in range(len(corners))[::-1]:
+        if j != 0:
+            __add_line(corners[j][i], corners[j - 1][i], True, COLORS[min(j-1,2)][min(i,2)])
+
+    i = 0
+    for j in range(len(corners)):
+        if j != len(corners) - 1:
+            __add_line(corners[j][i], corners[j + 1][i], True, COLORS[min(j,2)][min(i,2)])
+
 
     # Now connect the walls
     for h, row in enumerate(maze):
