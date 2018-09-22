@@ -1,0 +1,60 @@
+#include "zcommon.acs"
+
+#define TARGET_ID_START 1000 
+#define REWARD_ID_SHIFT 1000 
+#define REWARD_CHANCE 0.5
+#define GOAL_TID 999
+
+// Global Constants
+global int 0:reward;
+global int 1:shaping_reward;
+
+// Agent Related Constants
+global int 2:x_pos;
+global int 3:y_pos;
+global int 4:orientation;
+
+// Object Related Constants [Currently 5 objects]
+str objects[5]  = {"Column", "GreenTorch", "BlueTorch", "RedTorch", "TallRedColumn"};
+
+int TARGET_ID_END = TARGET_ID_START;
+int SPAWN_LOC_ID = 0;
+int GOAL_LOC_ID = 0;
+
+script 1 ENTER {
+	TARGET_ID_END = TARGET_ID_START;
+	while(IsTIDUsed(TARGET_ID_END + 1))
+	{
+		TARGET_ID_END += 1;
+	}
+
+	// Spawn actor
+	SPAWN_LOC_ID = random(TARGET_ID_START, TARGET_ID_END);
+	SetActorPosition(0, GetActorX(SPAWN_LOC_ID), GetActorY(SPAWN_LOC_ID), 0.0, 0);
+	SetActorAngle(0,random(0.0,1.0));
+	SetActorVelocity(0, 0, 0, 0, FALSE, FALSE);
+}
+
+script "spawn_object_by_id_and_location" (int id, int x, int y)
+{
+	int object_id = id;
+	while(Spawn(objects[object_id], x, y, 0.0) == FALSE);
+}
+
+script "set_position" (int x, int y, int angle){
+	int _orientation = 0.0;
+	if (angle == 0){
+		_orientation = 1.0;
+	} else if (angle == 1){
+		_orientation = 0.25;
+	} else if (angle == 2){
+		_orientation = 0.5;
+	} else if (angle == 3){
+		_orientation = 0.75;
+	} 
+	
+	SetActorAngle (0, _orientation);
+	SetActorPosition(0, x, y, GetActorZ(0), 1);
+} 
+
+

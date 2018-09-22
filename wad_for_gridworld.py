@@ -47,24 +47,23 @@ def build_wall(maze):
         v_indexes[w, h] = len(vertexes)
         vertexes.append(Vertex(x, y))
 
-    def __add_line(start, end, edge=False):
+    def __add_line(start, end, edge=False, front=0, back=0):
         assert start in v_indexes
         assert end in v_indexes
 
         mask = 1
-        left = right = 0
         if __is_edge(*start) and __is_edge(*end):
             if not edge:
                 return
             else:
-                # Changed the right side (one towards outside the map)
+                # Changed the back side (one towards outside the map)
                 # to be -1 (65535 for Doom)
-                right = 65535
+                back = 65535
                 mask = 15
 
-        # Flipped end and start vertices to make lines "point" at right direction (mostly to see if it works)
+        # Flipped end and start vertices to make lines "point" at back direction (mostly to see if it works)
         line_properties = [v_indexes[end], v_indexes[start], mask
-                           ] + [0] * 6 + [left, right]
+                           ] + [0] * 6 + [front, back]
         line = ZLinedef(*line_properties)
         linedefs.append(line)
 
@@ -75,15 +74,29 @@ def build_wall(maze):
             else:
                 pass
 
-    corners = [(0, 0), (max_w, 0), (max_w, max_h), (0, max_h)]
-    for v in corners:
-        __add_vertex(*v)
+    corners = [[( 0, 0), ( 0, 5), ( 0, 10), ( 0, 15)],
+               [( 5, 0), ( 5, 5), ( 5, 10), ( 5, 15)],
+               [(10, 0), (10, 5), (10, 10), (10, 15)],
+               [(15, 0), (15, 5), (15, 10), (15, 15)]]
+    # corners = [(0, 0), (0, max_w), (max_h, 0), (max_h, max_w)]
+    for _corners in corners:
+        for v in _corners:
+            __add_vertex(*v)
+    
+    # import IPython
+    # IPython.embed()
+    for _corners in corners:
+        for i in range(len(corners)):
+            if i != len(corners) - 1:
+                __add_line(corners[i], corners[i + 1], True)
+            else:
+                __add_line(corners[i], corners[0], True)
 
-    for i in range(len(corners)):
-        if i != len(corners) - 1:
-            __add_line(corners[i], corners[i + 1], True)
-        else:
-            __add_line(corners[i], corners[0], True)
+    def wall_colors(x, y):
+        _colors = [[2, 3, 4], [5, 6, 7], [8, 9, 10]]
+        _x = min(x, 14) // 5
+        _y = min(y, 14) // 5
+        return _colors[_x][_y]
 
     # Now connect the walls
     for h, row in enumerate(maze):
@@ -93,10 +106,20 @@ def build_wall(maze):
                 continue
 
             if (w + 1, h) in v_indexes:
-                __add_line((w, h), (w + 1, h))
+                front = wall_colors(w, max(h-1, 0))
+                back = wall_colors(w, min(h+1, 15))
+                # if h == 0 or h == 15:
+                #     __add_line((w, h), (w + 1, h), True, front, back)
+                # else:
+                __add_line((w, h), (w + 1, h), False, back, front)
 
             if (w, h + 1) in v_indexes:
-                __add_line((w, h), (w, h + 1))
+                front = wall_colors(max(w-1, 0), h)
+                back = wall_colors(min(w+1, 15), h)
+                # if w == 0 or w == 15:
+                #     __add_line((w, h), (w, h + 1), True, front, back)
+                # else:
+                __add_line((w, h), (w, h + 1), False, front, back)
 
     return things, vertexes, linedefs
 
@@ -121,10 +144,19 @@ def main(flags):
         new_map.things = things + [ZThing(0, 0, 0, 0, 0, 1, 7)]
         new_map.vertexes = vertexes
         new_map.linedefs = linedefs
-        new_map.sectors = [Sector(0, 128, 'CEIL5_2', 'CEIL5_2', 240, 0, 0)]
+        new_map.sectors = [ Sector(0, 128, 'CEIL5_2', 'CEIL5_2', 240, 0, 0) ]
         new_map.sidedefs = [
-            Sidedef(0, 0, '-', '-', 'STONE2', 0),
-            Sidedef(0, 0, '-', '-', '-', 0)
+            Sidedef(0, 0, '-', '-', 'STONE2', 0),   # 0
+            Sidedef(0, 0, '-', '-', '-', 0),        # 1
+            Sidedef(0, 0, 'BIGBRIK1', 'BIGBRIK1', 'BIGBRIK1', 0), # 2
+            Sidedef(0, 0, 'BIGBRIK2', 'BIGBRIK2', 'BIGBRIK2', 0), # 3
+            Sidedef(0, 0, 'SFALL1', 'SFALL1', 'SFALL1', 0),       # 4
+            Sidedef(0, 0, 'SILVER1', 'SILVER1', 'SILVER1', 0),    # 5
+            Sidedef(0, 0, 'SILVER2', 'SILVER2', 'SILVER2', 0),    # 6
+            Sidedef(0, 0, 'BIGDOOR2', 'BIGDOOR2', 'BIGDOOR2', 0), # 7
+            Sidedef(0, 0, 'BIGBRIK3', 'BIGBRIK3', 'BIGBRIK3', 0), # 8
+            Sidedef(0, 0, 'SILVER3', 'SILVER3', 'SILVER3', 0), # 9
+            Sidedef(0, 0, 'STONE2', 'STONE2', 'STONE2', 0),    # 10
         ]
         new_wad.maps['MAP01'] = new_map.to_lumps()
 
