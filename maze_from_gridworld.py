@@ -4,6 +4,7 @@ import argparse
 import numpy as np
 import glob
 import os
+import ipdb
 
 def _command_line_parser():
   parser = argparse.ArgumentParser()
@@ -31,7 +32,8 @@ class Maze:
       def _process_map_str(token):
         return WALL if token == '#' else EMPTY
       # Generate map for maze
-      board = np.array([ map(_process_map_str, line.strip()) for line in fd.readlines() ], dtype=WALL_TYPE)
+      board = np.array([ [ _process_map_str(char) for char in line.strip() ] \
+                                                  for line in fd.readlines() ], dtype=WALL_TYPE)
 
     self.board = board
     self.nrows = board.shape[0]
@@ -78,7 +80,6 @@ if __name__ == '__main__':
 
   print(FLAGS.maps)
   map_filepaths = glob.glob(os.path.join(FLAGS.maps, '*.txt'))
-  print(map_filepaths)
   mazes = set()
   for idx, map_filepath in enumerate(map_filepaths):
     print('Processing {}'.format(map_filepath))

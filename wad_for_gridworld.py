@@ -1,4 +1,6 @@
 import re
+import glob
+from tqdm import tqdm
 from omg import *
 import argparse
 
@@ -139,7 +141,7 @@ def main(flags):
 
 
     for map_index, file_name in enumerate(
-            glob.glob('{}/*.txt'.format(flags.prefix))):
+            tqdm(glob.glob('{}/*.txt'.format(flags.prefix)))):
 
         new_wad = WAD()
         with open(file_name) as maze_source:
