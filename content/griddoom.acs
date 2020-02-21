@@ -38,7 +38,8 @@ script 1 ENTER {
 	// Spawn actor
 	SPAWN_LOC_ID = random(TARGET_ID_START, TARGET_ID_END);
 	SetActorPosition(0, GetActorX(SPAWN_LOC_ID), GetActorY(SPAWN_LOC_ID), 0.0, 0);
-	SetActorAngle(0,random(0.0,1.0));
+	// SetActorAngle(0,random(0.0,1.0));
+	SetActorAngle(0, 0.5);
 	SetActorVelocity(0, 0, 0, 0, FALSE, FALSE);
 }
 
@@ -54,20 +55,19 @@ script "remove_object_by_id" (int id)
 	until(Thing_Remove(object_tids[object_id]));
 }
 
-script "set_position" (int x, int y, int angle){
-	int _orientation = 0.0;
-	if (angle == 0){
-		_orientation = 1.0;
-	} else if (angle == 1){
-		_orientation = 0.25;
-	} else if (angle == 2){
-		_orientation = 0.5;
-	} else if (angle == 3){
-		_orientation = 0.75;
-	} 
-	
-	SetActorAngle(0, _orientation);
+script "set_position" (int x, int y, int angle)
+{
 	SetActorPosition(0, x, y, GetActorZ(0), 1);
+
+	if (angle == 0){
+		SetActorAngle(0, 0.0);
+	} else if (angle == 1){
+		SetActorAngle(0, 0.25);
+	} else if (angle == 2){
+		SetActorAngle(0, 0.5);
+	} else if (angle == 3){
+		SetActorAngle(0, 0.75);
+	} 
 } 
 
 

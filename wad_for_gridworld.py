@@ -20,6 +20,7 @@ parser.add_argument(
 
 BLOCK_SIZE = 96
 COLORS = [[2, 3, 4], [5, 6, 7], [8, 9, 10]]
+#COLORS = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
 
 def build_wall(maze):
     things = []
