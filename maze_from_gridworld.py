@@ -32,7 +32,7 @@ class Maze:
       def _process_map_str(token):
         return WALL if token == '#' else EMPTY
       # Generate map for maze
-      board = np.array([ [ _process_map_str(char) for char in line.strip() ] \
+      board = np.array([ [ _process_map_str(char) for char in line.strip('\n') ] \
                                                   for line in fd.readlines() ], dtype=WALL_TYPE)
 
     self.board = board
