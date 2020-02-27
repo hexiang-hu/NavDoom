@@ -55,7 +55,6 @@ def build_wall(maze):
         assert end in v_indexes
 
         mask = 1
-        ''' # debug
         if __is_edge(*start) and __is_edge(*end):
             if not edge:
                 return
@@ -64,7 +63,6 @@ def build_wall(maze):
                 # to be -1 (65535 for Doom)
                 back = 65535
                 mask = 15
-        '''
 
         # Flipped end and start vertices to make lines "point" at back direction (mostly to see if it works)
         line_properties = [v_indexes[end], v_indexes[start], mask
@@ -83,10 +81,11 @@ def build_wall(maze):
                #[( 5, 0), ( 5, 5), ( 5, 10), ( 5, 15)],
                #[(10, 0), (10, 5), (10, 10), (10, 15)],
                #[(15, 0), (15, 5), (15, 10), (15, 15)]]
-    # corners = [(0, 0), (0, max_w), (max_h, 0), (max_h, max_w)]
-    #for _corners in corners:
-        #for v in _corners:
-            #__add_vertex(*v)
+    #corners = [(0, 0), (0, max_w), (max_h, 0), (max_h, max_w)]
+    corners = [[(0, 0), (0, max_w)], [(max_h, 0), (max_h, max_w)]]
+    for _corners in corners:
+        for v in _corners:
+            __add_vertex(*v)
     
     def wall_colors(x, y):
         #_x = min(x, 14) // 5
@@ -94,25 +93,26 @@ def build_wall(maze):
         #return COLORS[_x][_y]
         return 0
 
-    #j = 0
-    #for i in range(len(corners[0]))[::-1]:
-        #if i != 0:
-            #__add_line(corners[j][i], corners[j][i - 1], True, COLORS[min(j,2)][min(i-1,2)])
+    # add corners
+    j = 0
+    for i in range(len(corners[0]))[::-1]:
+        if i != 0:
+            __add_line(corners[j][i], corners[j][i - 1], True, 0)
 
-    #j = len(corners) - 1
-    #for i in range(len(corners[0])):
-        #if i != (len(corners[0]) - 1):
-            #__add_line(corners[j][i], corners[j][i + 1], True, COLORS[min(j,2)][min(i,2)])
+    j = len(corners) - 1
+    for i in range(len(corners[0])):
+        if i != (len(corners[0]) - 1):
+            __add_line(corners[j][i], corners[j][i + 1], True, 0)
     
-    #i = len(corners[0]) - 1
-    #for j in range(len(corners))[::-1]:
-        #if j != 0:
-            #__add_line(corners[j][i], corners[j - 1][i], True, COLORS[min(j-1,2)][min(i,2)])
+    i = len(corners[0]) - 1
+    for j in range(len(corners))[::-1]:
+        if j != 0:
+            __add_line(corners[j][i], corners[j - 1][i], True, 0)
 
-    #i = 0
-    #for j in range(len(corners)):
-        #if j != len(corners) - 1:
-            #__add_line(corners[j][i], corners[j + 1][i], True, COLORS[min(j,2)][min(i,2)])
+    i = 0
+    for j in range(len(corners)):
+        if j != len(corners) - 1:
+            __add_line(corners[j][i], corners[j + 1][i], True, 0)
 
 
     # Now connect the walls
