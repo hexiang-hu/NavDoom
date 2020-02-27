@@ -106,3 +106,4 @@ ENV/
 # Export
 outputs/
 maps
+.DS_Store
