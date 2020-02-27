@@ -105,3 +105,4 @@ ENV/
 
 # Export
 outputs/
+.DS_Store
