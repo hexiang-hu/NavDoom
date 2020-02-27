@@ -1,10 +1,24 @@
 #!/usr/bin/env bash
 set -e
 
-rm -rf outputs
-mkdir -p outputs
-mkdir -p outputs/sources
-mkdir -p outputs/images
+OP_DIR=$1
+
+if [ -z "$OP_DIR" ]; then
+	echo "need to specify operation directory"
+	exit
+fi
+
+MAPPATH=$OP_DIR/maps
+
+if [ ! -e $MAPPATH ]; then
+	echo "need maps directory"
+	exit
+fi
+
+rm -rf $OP_DIR/outputs
+mkdir -p $OP_DIR/outputs
+mkdir -p $OP_DIR/outputs/sources
+mkdir -p $OP_DIR/outputs/images
 
 NUM_MAZES=200
 
@@ -15,14 +29,14 @@ if [ ! -f $ACC ]; then
 fi
 
 for FILE in content/*.acs; do
-	$ACC -i ./acc $FILE "outputs/$(basename ${FILE%.*}).o"
+	$ACC -i ./acc $FILE "$OP_DIR/outputs/$(basename ${FILE%.*}).o"
 done
 
-PREFIX="./outputs/sources"
-MAPPATH="./maps/"
+PREFIX="$OP_DIR/outputs/sources"
+
 echo "python maze_from_gridworld.py -o $PREFIX -m $MAPPATH"
 python maze_from_gridworld.py -o $PREFIX -m $MAPPATH
-python wad_for_gridworld.py "${PREFIX}" "outputs/" -b outputs/griddoom.o
+python wad_for_gridworld.py "${PREFIX}" "$OP_DIR/outputs/" -b $OP_DIR/outputs/griddoom.o
 echo "Success."
 
 #python wad_for_gridworld.py "./outputs/sources" "outputs/" -b outputs/griddoom.o
