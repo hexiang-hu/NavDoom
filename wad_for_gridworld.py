@@ -21,6 +21,8 @@ parser.add_argument(
 BLOCK_SIZE = 96
 COLORS = [[2, 3, 4], [5, 6, 7], [8, 9, 10]]
 #COLORS = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+EXPAND = 3
+
 
 def build_wall(maze):
     things = []
@@ -81,19 +83,21 @@ def build_wall(maze):
                #[( 5, 0), ( 5, 5), ( 5, 10), ( 5, 15)],
                #[(10, 0), (10, 5), (10, 10), (10, 15)],
                #[(15, 0), (15, 5), (15, 10), (15, 15)]]
+    corners = [[(0, 0), (0, max_h)],
+               [(max_w, 0), (max_w, max_h)]]
     #corners = [(0, 0), (0, max_w), (max_h, 0), (max_h, max_w)]
-    corners = [[(0, 0), (0, max_w)], [(max_h, 0), (max_h, max_w)]]
     for _corners in corners:
         for v in _corners:
             __add_vertex(*v)
-    
+
     def wall_colors(x, y):
         #_x = min(x, 14) // 5
         #_y = min(y, 14) // 5
-        #return COLORS[_x][_y]
-        return 0
+        _x = min(x, 22 * EXPAND - 1) // (8 * EXPAND)
+        _y = min(y, 22 * EXPAND - 1) // (8 * EXPAND)
+        return COLORS[_x][_y]
 
-    # add corners
+    # the outer
     j = 0
     for i in range(len(corners[0]))[::-1]:
         if i != 0:
@@ -124,19 +128,15 @@ def build_wall(maze):
 
             if (w + 1, h) in v_indexes:
                 front = wall_colors(w, max(h-1, 0))
-                back = wall_colors(w, min(h+1, 15))
-                # if h == 0 or h == 15:
-                #     __add_line((w, h), (w + 1, h), True, front, back)
-                # else:
+                back = wall_colors(w, min(h+1, 22 * EXPAND - 1))
                 __add_line((w, h), (w + 1, h), False, back, front)
+                print((w, h), (back, front))
 
             if (w, h + 1) in v_indexes:
                 front = wall_colors(max(w-1, 0), h)
-                back = wall_colors(min(w+1, 15), h)
-                # if w == 0 or w == 15:
-                #     __add_line((w, h), (w, h + 1), True, front, back)
-                # else:
+                back = wall_colors(min(w+1, 22 * EXPAND - 1), h)
                 __add_line((w, h), (w, h + 1), False, front, back)
+                print((w, h), (back, front))
 
     return things, vertexes, linedefs
 
